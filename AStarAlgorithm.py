@@ -9,7 +9,11 @@ class AStarAlgorithm:
     def solve(self):
 
         openList = []
-        closedList = []
+        cameFrom = {}
+
+        fScore = {}
+        fScore[self.startNode] = 0
+
 
         while len(openList) > 0:
             currentNode = openList[0]
@@ -21,4 +25,9 @@ class AStarAlgorithm:
                     currentNodeIndex = index
 
             openList.pop(currentNodeIndex)
-            closedList.pop(currentNode)
+
+
+            if currentNode.position == self.endNode.position:
+                # TODO reverse Path
+                pass
+

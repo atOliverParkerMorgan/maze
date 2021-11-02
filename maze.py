@@ -51,6 +51,6 @@ class Maze:
             x = node.position[0] + newPosition[0]
             y = node.position[1] + newPosition[1]
             if 0 <= x < self.width and 0 <= y < self.height and not self.map[y][x].isObstacle():
-                children.append(self.map[y][x])
+                children.append(Node((x, y)))
 
         return children
