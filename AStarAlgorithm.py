@@ -1,10 +1,12 @@
+from Maze import Maze
+from Node import Node
+
 class AStarAlgorithm:
 
     @staticmethod
-    def solve(maze, startNode, endNode):
+    def solve(maze: Maze, startNode: Node, endNode: Node):
 
         startNode.f = startNode.g = startNode.h = 0
-
         openSet = [startNode]
         closedSet = []
 
