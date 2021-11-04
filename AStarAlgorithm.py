@@ -18,7 +18,7 @@ def solve(maze: Maze, startNode: Node = None, goalNode: Node = None):
         currentNode = openSet[0]
         currentIndex = 0
 
-        for index, item in enumerate(openSe):
+        for index, item in enumerate(openSet):
             if item.f < currentNode.f:
                 currentNode = item
                 currentIndex = index
