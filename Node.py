@@ -30,6 +30,9 @@ class Node:
     def setToDefault(self):
         self.symbol = "#"
 
+    def setToSearched(self):
+        self.symbol = "*"
+
     def isObstacle(self):
         return self.symbol == "o"
 
@@ -44,6 +47,9 @@ class Node:
 
     def isDestination(self):
         return self.symbol == "g"
+
+    def isSearched(self):
+        return self.symbol == "*"
 
     def getDist(self, node):
         return math.sqrt((node.x - self.x) ** 2 + (node.y - self.y) ** 2)

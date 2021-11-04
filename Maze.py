@@ -10,7 +10,7 @@ class Maze:
         self.map: List[List[Node]] = []
         self.obstacles: List[tuple] = obstacles
         self.startNodePos: tuple = goalNodePos
-        self.goalNodePos: tuple = startNodePos
+        self.destinationNodePos: tuple = startNodePos
         self.currentPath: List[Node] = currentPath
 
     def createMap(self):
@@ -62,11 +62,11 @@ class Maze:
         self.getNode(self.startNodePos[0], self.startNodePos[1]).setToStart()
 
     def setDestination(self, x: int, y: int):
-        if self.goalNodePos is not None:
-            self.getNode(self.goalNodePos[0], self.goalNodePos[1]).setToDefault()
+        if self.destinationNodePos is not None:
+            self.getNode(self.destinationNodePos[0], self.destinationNodePos[1]).setToDefault()
 
-        self.goalNodePos = (x, y)
-        self.getNode(self.goalNodePos[0], self.goalNodePos[1]).setToStart()
+        self.destinationNodePos = (x, y)
+        self.getNode(self.destinationNodePos[0], self.destinationNodePos[1]).setToDestination()
 
     def getStart(self):
         if self.startNodePos is None:
@@ -74,15 +74,15 @@ class Maze:
         return self.getNode(self.startNodePos[0], self.startNodePos[1])
 
     def getDestination(self):
-        if self.goalNodePos is None:
+        if self.destinationNodePos is None:
             return None
-        return self.getNode(self.goalNodePos[0], self.goalNodePos[1])
+        return self.getNode(self.destinationNodePos[0], self.destinationNodePos[1])
 
     def hasStart(self):
         return self.startNodePos is not None
 
     def hasDestination(self):
-        return self.goalNodePos is not None
+        return self.destinationNodePos is not None
 
     def getNode(self, x: int, y: int):
         return self.map[y][x]

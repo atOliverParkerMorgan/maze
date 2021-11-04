@@ -6,18 +6,22 @@ from typing import List
 class AStar:
 
     def __init__(self, maze: Maze):
-        self.maze: Maze = maze
-        self.startNode = None
-        self.destinationNode = None
+        self.destinationNode: Node = maze.getDestination()
+        self.startNode: Node = maze.getStart()
 
-        self.startNode.f = self.startNode.g = self.startNode.h = 0
-        self.openSet = [self.startNode]
+        self.distFromStartToDestination: int = self.startNode.getDist(self.destinationNode)
+
         self.closedSet = []
+        self.openSet = [self.startNode]
 
+        self.maze: Maze = maze
         self.pathSolution: List[Node] = []
 
-    def solutionCycle(self):
+    def hideSearched(self):
+        for node in self.closedSet:
+            node.setToDefault()
 
+    def solutionCycle(self):
         # find the node with the best score f (the node that is closet to start and end)
         currentNode = self.openSet[0]
         currentIndex = 0
@@ -42,8 +46,9 @@ class AStar:
             while pathToEnd[len(pathToEnd) - 1].parent is not None:
                 pathToEnd.append(pathToEnd[len(pathToEnd) - 1].parent)
 
+            # path found => save path and return to True to signal success
             self.pathSolution = pathToEnd[::-1]
-            return False
+            return True
 
         # get the all the children of the currentNode (the node that is currently being search)
         # children are the neighboring nodes of currentNode
@@ -77,13 +82,13 @@ class AStar:
                 # total value of node
                 child.f = child.g + child.h
 
-        return len(self.openSet) > 0
+                # change the visual representation of node
+                currentNode.setToSearched()
 
-    def solve(self, startNode: Node = None, destinationNode: Node = None):
-        while self.solutionCycle(startNode, destinationNode):
+        # return True if no valid path
+        return len(self.openSet) <= 0
+
+    def solve(self):
+        while self.solutionCycle():
             pass
         return self.pathSolution
-
-    def setStartAndDestination(self, startNode: Node, destinationNode: Node):
-        self.startNode: Node = startNode
-        self.destinationNode: Node = destinationNode
