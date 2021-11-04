@@ -1,22 +1,18 @@
 import pygame
 import pygame_menu
-import PathFindingAlgorithms
 from Maze import Maze
 from pygame_menu.examples import create_example_window
-from typing import List
-from Node import Node
 
 
 class Graphics:
 
-    def __init__(self, width: int, height: int, mazeSolvingAlgorithm, blockSize: int = 20):
+    def __init__(self, width: int, height: int, blockSize: int = 20):
 
         self.BLACK: tuple = (0, 0, 0)
         self.WHITE: tuple = (200, 200, 200)
         self.RED: tuple = (255, 87, 51)
-        self.GREEN: tuple = (200, 162, 34)
+        self.GREEN: tuple = (106, 162, 34)
         self.PURPLE: tuple = (100, 34, 162)
-        self.YELLOW: tuple = (255, 255, 0)
         self.LIGHT_BLUE: tuple = (102, 167, 197)
         self.LIGHT_PINK: tuple = (236, 181, 235)
 
@@ -28,79 +24,22 @@ class Graphics:
         self.CLOCK = pygame.time.Clock()
         self.SCREEN.fill(self.BLACK)
 
-        self.mouseIsPressed: bool = False
-
-        self.placeObstacle: bool = False
-        self.placeStart: bool = False
-        self.placeGoal: bool = False
-
-        self.mazeSolvingAlgorithm = mazeSolvingAlgorithm
-
-    def resetButtons(self):
-        self.placeObstacle: bool = False
-        self.placeStart: bool = False
-        self.placeGoal: bool = False
-
     def drawGrid(self):
         for x in range(0, self.WINDOW_WIDTH, self.blockSize):
             for y in range(0, self.WINDOW_HEIGHT, self.blockSize):
                 rect = pygame.Rect(x, y, self.blockSize, self.blockSize)
                 pygame.draw.rect(self.SCREEN, self.WHITE, rect, 1)
 
-    def manageInput(self, maze: Maze):
-        pos: tuple = pygame.mouse.get_pos()
-
-        mouseX: int = int(pos[0] / self.blockSize)
-        mouseY: int = int(pos[1] / self.blockSize)
-
-        if self.mouseIsPressed and self.placeObstacle:
-            maze.map[mouseY][mouseX].setToObstacle()
-
-        if self.mouseIsPressed and self.placeStart:
-            maze.setStart(mouseX, mouseY)
-
-        elif self.mouseIsPressed and self.placeGoal:
-            maze.setGoal(mouseX, mouseY)
-
-    def tryToSolve(self, maze):
-        if maze.hasStart() and maze.hasGoal():
-            maze.deletePath()
-            path: List[Node] = self.mazeSolvingAlgorithm.solve()
-            maze.createPath(path)
-            if path is not None:
-                maze.startNodePos = None
-                maze.goalNodePos = None
-
-    def evenHandler(self, maze: Maze):
+    def evenHandler(self, maze):
         while True:
             self.drawNodes(maze)
             self.drawGrid()
-            self.manageInput(maze)
-            self.tryToSolve(maze)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
-                    elif event.key == pygame.K_s:
-                        self.resetButtons()
-                        self.placeStart = True
-
-                    elif event.key == pygame.K_d:
-                        self.resetButtons()
-                        self.placeGoal = True
-
-                    elif event.key == pygame.K_o:
-                        self.resetButtons()
-                        self.placeObstacle = True
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.mouseIsPressed = True
-
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    self.mouseIsPressed = False
 
             pygame.display.update()
 
@@ -115,10 +54,6 @@ class Graphics:
                     COLOR = self.RED
                 elif node.isPath():
                     COLOR = self.PURPLE
-                elif node.isStar():
-                    COLOR = self.GREEN
-                elif node.isDestination():
-                    COLOR = self.YELLOW
 
                 pygame.draw.rect(self.SCREEN, COLOR, (x, y, self.blockSize, self.blockSize))
 
@@ -140,10 +75,10 @@ class Graphics:
         menu.add.label('----------------------------------')
         menu.add.label("")
         menu.add.label("CONTROLS")
-        menu.add.label('S + MOUSE => selects start      ')
-        menu.add.label('D + MOUSE => selects finish     ')
-        menu.add.label('O + MOUSE => adds obstacle      ')
-        menu.add.label('A + MOUSE => solves maze with A*')
+        menu.add.label('Ctr + S => selects start')
+        menu.add.label('Ctr + G => selects finish')
+        menu.add.label('Ctr + O => adds obstacle')
+        menu.add.label('Ctr + A => solves maze with A*')
         menu.add.label("")
         menu.add.label('Author: Oliver Morgan')
         menu.add.label("")
