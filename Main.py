@@ -1,4 +1,4 @@
-# import AStarAlgorithm
+from PathFindingAlgorithms import AStar
 from Maze import Maze
 from Grafics import Graphics
 # from Node import Node
@@ -20,7 +20,7 @@ class Main:
         # if path is not None:
         #    self.maze.createPath(path)
         #    self.maze.printMaze()
-
+        aStar: AStar = AStar(self.maze)
         graphics = Graphics(WIDTH * GRAPHIC_NODE_SIZE, HEIGHT * GRAPHIC_NODE_SIZE, GRAPHIC_NODE_SIZE)
         graphics.createMenu(gameHasStarted, self.maze)
 

@@ -1,6 +1,6 @@
 import pygame
 import pygame_menu
-import AStarAlgorithm
+import PathFindingAlgorithms
 from Maze import Maze
 from pygame_menu.examples import create_example_window
 from typing import List
