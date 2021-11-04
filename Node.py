@@ -24,7 +24,7 @@ class Node:
     def setToStart(self):
         self.symbol = "s"
 
-    def setToGoal(self):
+    def setToDestination(self):
         self.symbol = "g"
 
     def setToDefault(self):
@@ -42,7 +42,7 @@ class Node:
     def isStar(self):
         return self.symbol == "s"
 
-    def isGoal(self):
+    def isDestination(self):
         return self.symbol == "g"
 
     def getDist(self, node):

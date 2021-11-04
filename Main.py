@@ -6,7 +6,7 @@ from Grafics import Graphics
 
 class Main:
 
-    def __init__(self, gameHasStarted):
+    def __init__(self, gameHasStarted: bool):
         HEIGHT: int = 100
         WIDTH: int = 100
         GRAPHIC_NODE_SIZE: int = 10

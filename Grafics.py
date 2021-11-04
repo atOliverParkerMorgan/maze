@@ -9,8 +9,12 @@ from Node import Node
 
 def tryToSolve(maze):
     if maze.hasStart() and maze.hasGoal():
+        maze.deletePath()
         path: List[Node] = AStarAlgorithm.solve(maze)
         maze.createPath(path)
+        if path is not None:
+            maze.startNodePos = None
+            maze.goalNodePos = None
 
 
 class Graphics:
@@ -83,7 +87,7 @@ class Graphics:
                         self.resetButtons()
                         self.placeStart = True
 
-                    elif event.key == pygame.K_g:
+                    elif event.key == pygame.K_d:
                         self.resetButtons()
                         self.placeGoal = True
 
@@ -112,11 +116,10 @@ class Graphics:
                     COLOR = self.PURPLE
                 elif node.isStar():
                     COLOR = self.GREEN
-                elif node.isGoal():
+                elif node.isDestination():
                     COLOR = self.YELLOW
 
                 pygame.draw.rect(self.SCREEN, COLOR, (x, y, self.blockSize, self.blockSize))
-
 
     def createMenu(self, gameHasStarted: bool, maze: Maze):
         def resumeGame():
@@ -137,7 +140,7 @@ class Graphics:
         menu.add.label("")
         menu.add.label("CONTROLS")
         menu.add.label('S + MOUSE => selects start      ')
-        menu.add.label('G + MOUSE => selects finish     ')
+        menu.add.label('D + MOUSE => selects finish     ')
         menu.add.label('O + MOUSE => adds obstacle      ')
         menu.add.label('A + MOUSE => solves maze with A*')
         menu.add.label("")

@@ -3,13 +3,15 @@ from typing import List
 
 
 class Maze:
-    def __init__(self, width: int, height: int, obstacles: List[tuple] = None):
+    def __init__(self, width: int, height: int, obstacles: List[tuple] = None, startNodePos: tuple = None,
+                 goalNodePos: tuple = None, currentPath: List[Node] = None):
         self.width: int = width
         self.height: int = height
         self.map: List[List[Node]] = []
         self.obstacles: List[tuple] = obstacles
-        self.startNodePos: tuple = None
-        self.goalNodePos: tuple = None
+        self.startNodePos: tuple = goalNodePos
+        self.goalNodePos: tuple = startNodePos
+        self.currentPath: List[Node] = currentPath
 
     def createMap(self):
         for y in range(self.height):
@@ -23,8 +25,16 @@ class Maze:
                 self.getNode(ob[0], ob[1]).setToObstacle()
 
     def createPath(self, path: List[Node]):
-        for node in path:
-            self.getNode(node.x, node.y).setToPath()
+        if path is not None:
+            for node in path:
+                self.getNode(node.x, node.y).setToPath()
+            self.currentPath = path
+
+    def deletePath(self):
+        if self.currentPath is not None:
+            for node in self.currentPath:
+                if self.getNode(node.x, node.y).isPath():
+                    self.getNode(node.x, node.y).setToDefault()
 
     def printMaze(self):
         for y in range(self.height):
@@ -39,8 +49,8 @@ class Maze:
         for newPosition in positionOfChildren:
             x = node.x + newPosition[0]
             y = node.y + newPosition[1]
-            if 0 <= x < self.width and 0 <= y < self.height and not self.map[y][x].isObstacle():
-                children.append(self.map[y][x])
+            if 0 <= x < self.width and 0 <= y < self.height and not self.getNode(x, y).isObstacle():
+                children.append(self.getNode(x, y))
 
         return children
 
