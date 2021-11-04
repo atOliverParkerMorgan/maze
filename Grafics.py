@@ -7,19 +7,9 @@ from typing import List
 from Node import Node
 
 
-def tryToSolve(maze):
-    if maze.hasStart() and maze.hasGoal():
-        maze.deletePath()
-        path: List[Node] = AStarAlgorithm.solve(maze)
-        maze.createPath(path)
-        if path is not None:
-            maze.startNodePos = None
-            maze.goalNodePos = None
-
-
 class Graphics:
 
-    def __init__(self, width: int, height: int, blockSize: int = 20):
+    def __init__(self, width: int, height: int, mazeSolvingAlgorithm, blockSize: int = 20):
 
         self.BLACK: tuple = (0, 0, 0)
         self.WHITE: tuple = (200, 200, 200)
@@ -43,6 +33,8 @@ class Graphics:
         self.placeObstacle: bool = False
         self.placeStart: bool = False
         self.placeGoal: bool = False
+
+        self.mazeSolvingAlgorithm = mazeSolvingAlgorithm
 
     def resetButtons(self):
         self.placeObstacle: bool = False
@@ -70,12 +62,21 @@ class Graphics:
         elif self.mouseIsPressed and self.placeGoal:
             maze.setGoal(mouseX, mouseY)
 
+    def tryToSolve(self, maze):
+        if maze.hasStart() and maze.hasGoal():
+            maze.deletePath()
+            path: List[Node] = self.mazeSolvingAlgorithm.solve()
+            maze.createPath(path)
+            if path is not None:
+                maze.startNodePos = None
+                maze.goalNodePos = None
+
     def evenHandler(self, maze: Maze):
         while True:
             self.drawNodes(maze)
             self.drawGrid()
             self.manageInput(maze)
-            tryToSolve(maze)
+            self.tryToSolve(maze)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

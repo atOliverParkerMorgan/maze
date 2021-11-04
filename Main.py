@@ -20,8 +20,8 @@ class Main:
         # if path is not None:
         #    self.maze.createPath(path)
         #    self.maze.printMaze()
-        aStar: AStar = AStar(self.maze)
-        graphics = Graphics(WIDTH * GRAPHIC_NODE_SIZE, HEIGHT * GRAPHIC_NODE_SIZE, GRAPHIC_NODE_SIZE)
+        aStar = AStar(self.maze)
+        graphics = Graphics(WIDTH * GRAPHIC_NODE_SIZE, HEIGHT * GRAPHIC_NODE_SIZE, aStar, GRAPHIC_NODE_SIZE)
         graphics.createMenu(gameHasStarted, self.maze)
 
 
