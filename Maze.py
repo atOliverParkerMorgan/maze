@@ -1,11 +1,12 @@
 from Node import Node
+from typing import List
 
 
 class Maze:
     def __init__(self, width, height, obstacles=None):
         self.width = width
         self.height = height
-        self.map = []
+        self.map: List[List[Node]] = []
         self.obstacles = obstacles
 
     def createMap(self):

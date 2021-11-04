@@ -24,22 +24,54 @@ class Graphics:
         self.CLOCK = pygame.time.Clock()
         self.SCREEN.fill(self.BLACK)
 
+        self.mouseIsPressed: bool = False
+
+        self.placeObstacle: bool = False
+        self.placeStart: bool = False
+        self.placeGoal: bool = False
+
+    def resetButtons(self):
+        self.placeObstacle: bool = False
+        self.placeStart: bool = False
+        self.placeGoal: bool = False
+
     def drawGrid(self):
         for x in range(0, self.WINDOW_WIDTH, self.blockSize):
             for y in range(0, self.WINDOW_HEIGHT, self.blockSize):
                 rect = pygame.Rect(x, y, self.blockSize, self.blockSize)
                 pygame.draw.rect(self.SCREEN, self.WHITE, rect, 1)
 
-    def evenHandler(self, maze):
+    def evenHandler(self, maze: Maze):
         while True:
             self.drawNodes(maze)
             self.drawGrid()
+            if self.mouseIsPressed and self.placeObstacle:
+                pos = pygame.mouse.get_pos()
+                maze.map[int(pos[1] / self.blockSize)][int(pos[0] / self.blockSize)].setToObstacle()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         exit()
+                    elif event.key == pygame.K_s:
+                        self.resetButtons()
+                        self.placeStart = True
+
+                    elif event.key == pygame.K_g:
+                        self.resetButtons()
+                        self.placeGoal = True
+
+                    elif event.key == pygame.K_o:
+                        self.resetButtons()
+                        self.placeObstacle = True
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.mouseIsPressed = True
+
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    self.mouseIsPressed = False
 
             pygame.display.update()
 
@@ -75,10 +107,10 @@ class Graphics:
         menu.add.label('----------------------------------')
         menu.add.label("")
         menu.add.label("CONTROLS")
-        menu.add.label('Ctr + S => selects start      ')
-        menu.add.label('Ctr + G => selects finish     ')
-        menu.add.label('Ctr + O => adds obstacle      ')
-        menu.add.label('Ctr + A => solves maze with A*')
+        menu.add.label('S + MOUSE => selects start      ')
+        menu.add.label('G + MOUSE => selects finish     ')
+        menu.add.label('O + MOUSE => adds obstacle      ')
+        menu.add.label('A + MOUSE => solves maze with A*')
         menu.add.label("")
         menu.add.label('Author: Oliver Morgan')
         menu.add.label("")
