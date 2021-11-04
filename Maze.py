@@ -61,7 +61,7 @@ class Maze:
         self.startNodePos = (x, y)
         self.getNode(self.startNodePos[0], self.startNodePos[1]).setToStart()
 
-    def setGoal(self, x: int, y: int):
+    def setDestination(self, x: int, y: int):
         if self.goalNodePos is not None:
             self.getNode(self.goalNodePos[0], self.goalNodePos[1]).setToDefault()
 
@@ -73,7 +73,7 @@ class Maze:
             return None
         return self.getNode(self.startNodePos[0], self.startNodePos[1])
 
-    def getGoal(self):
+    def getDestination(self):
         if self.goalNodePos is None:
             return None
         return self.getNode(self.goalNodePos[0], self.goalNodePos[1])
@@ -81,7 +81,7 @@ class Maze:
     def hasStart(self):
         return self.startNodePos is not None
 
-    def hasGoal(self):
+    def hasDestination(self):
         return self.goalNodePos is not None
 
     def getNode(self, x: int, y: int):

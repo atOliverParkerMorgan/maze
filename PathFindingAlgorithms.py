@@ -5,17 +5,12 @@ from typing import List
 
 class AStar:
 
-    def __init__(self, maze: Maze, startNode: Node = None, destinationNode: Node = None):
+    def __init__(self, maze: Maze):
         self.maze: Maze = maze
-        self.startNode: Node = startNode
-        self.destinationNode: Node = destinationNode
-
-        if self.startNode is None:
-            self.startNode: Node = self.maze.getStart()
-            self.destinationNode: Node = self.maze.getGoal()
+        self.startNode = None
+        self.destinationNode = None
 
         self.startNode.f = self.startNode.g = self.startNode.h = 0
-
         self.openSet = [self.startNode]
         self.closedSet = []
 
@@ -84,7 +79,11 @@ class AStar:
 
         return len(self.openSet) > 0
 
-    def solve(self):
-        while self.solutionCycle():
+    def solve(self, startNode: Node = None, destinationNode: Node = None):
+        while self.solutionCycle(startNode, destinationNode):
             pass
         return self.pathSolution
+
+    def setStartAndDestination(self, startNode: Node, destinationNode: Node):
+        self.startNode: Node = startNode
+        self.destinationNode: Node = destinationNode
