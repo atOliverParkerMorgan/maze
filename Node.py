@@ -21,6 +21,15 @@ class Node:
     def setToPath(self):
         self.symbol = "x"
 
+    def setToStart(self):
+        self.symbol = "s"
+
+    def setToGoal(self):
+        self.symbol = "g"
+
+    def setToDefault(self):
+        self.symbol = "#"
+
     def isObstacle(self):
         return self.symbol == "o"
 
@@ -29,6 +38,12 @@ class Node:
 
     def isDefault(self):
         return self.symbol == "#"
+
+    def isStar(self):
+        return self.symbol == "s"
+
+    def isGoal(self):
+        return self.symbol == "g"
 
     def getDist(self, node):
         return math.sqrt((node.x - self.x) ** 2 + (node.y - self.y) ** 2)

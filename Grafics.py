@@ -1,7 +1,16 @@
 import pygame
 import pygame_menu
+import AStarAlgorithm
 from Maze import Maze
 from pygame_menu.examples import create_example_window
+from typing import List
+from Node import Node
+
+
+def tryToSolve(maze):
+    if maze.hasStart() and maze.hasGoal():
+        path: List[Node] = AStarAlgorithm.solve(maze)
+        maze.createPath(path)
 
 
 class Graphics:
@@ -11,8 +20,9 @@ class Graphics:
         self.BLACK: tuple = (0, 0, 0)
         self.WHITE: tuple = (200, 200, 200)
         self.RED: tuple = (255, 87, 51)
-        self.GREEN: tuple = (106, 162, 34)
+        self.GREEN: tuple = (200, 162, 34)
         self.PURPLE: tuple = (100, 34, 162)
+        self.YELLOW: tuple = (255, 255, 0)
         self.LIGHT_BLUE: tuple = (102, 167, 197)
         self.LIGHT_PINK: tuple = (236, 181, 235)
 
@@ -41,13 +51,27 @@ class Graphics:
                 rect = pygame.Rect(x, y, self.blockSize, self.blockSize)
                 pygame.draw.rect(self.SCREEN, self.WHITE, rect, 1)
 
+    def manageInput(self, maze: Maze):
+        pos: tuple = pygame.mouse.get_pos()
+
+        mouseX: int = int(pos[0] / self.blockSize)
+        mouseY: int = int(pos[1] / self.blockSize)
+
+        if self.mouseIsPressed and self.placeObstacle:
+            maze.map[mouseY][mouseX].setToObstacle()
+
+        if self.mouseIsPressed and self.placeStart:
+            maze.setStart(mouseX, mouseY)
+
+        elif self.mouseIsPressed and self.placeGoal:
+            maze.setGoal(mouseX, mouseY)
+
     def evenHandler(self, maze: Maze):
         while True:
             self.drawNodes(maze)
             self.drawGrid()
-            if self.mouseIsPressed and self.placeObstacle:
-                pos = pygame.mouse.get_pos()
-                maze.map[int(pos[1] / self.blockSize)][int(pos[0] / self.blockSize)].setToObstacle()
+            self.manageInput(maze)
+            tryToSolve(maze)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -86,8 +110,13 @@ class Graphics:
                     COLOR = self.RED
                 elif node.isPath():
                     COLOR = self.PURPLE
+                elif node.isStar():
+                    COLOR = self.GREEN
+                elif node.isGoal():
+                    COLOR = self.YELLOW
 
                 pygame.draw.rect(self.SCREEN, COLOR, (x, y, self.blockSize, self.blockSize))
+
 
     def createMenu(self, gameHasStarted: bool, maze: Maze):
         def resumeGame():

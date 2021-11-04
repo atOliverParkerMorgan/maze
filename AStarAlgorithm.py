@@ -1,73 +1,75 @@
 from Maze import Maze
 from Node import Node
 
-class AStarAlgorithm:
 
-    @staticmethod
-    def solve(maze: Maze, startNode: Node, endNode: Node):
+def solve(maze: Maze, startNode: Node = None, goalNode: Node = None):
 
-        startNode.f = startNode.g = startNode.h = 0
-        openSet = [startNode]
-        closedSet = []
+    if startNode is None:
+        startNode: Node = maze.getStart()
+        goalNode: Node = maze.getGoal()
 
-        while len(openSet) > 0:
+    startNode.f = startNode.g = startNode.h = 0
+    openSet = [startNode]
+    closedSet = []
 
-            # find the node with the best score f (the node that is closet to start and end)
-            currentNode = openSet[0]
-            currentIndex = 0
+    while len(openSet) > 0:
 
-            for index, item in enumerate(openSet):
-                if item.f < currentNode.f:
-                    currentNode = item
-                    currentIndex = index
+        # find the node with the best score f (the node that is closet to start and end)
+        currentNode = openSet[0]
+        currentIndex = 0
 
-            # remove node from open set => the nodes that haven't been searched yet
-            openSet.pop(currentIndex)
+        for index, item in enumerate(openSet):
+            if item.f < currentNode.f:
+                currentNode = item
+                currentIndex = index
 
-            # add to close set => the nodes that have been searched
-            closedSet.append(currentNode)
+        # remove node from open set => the nodes that haven't been searched yet
+        openSet.pop(currentIndex)
 
-            # if the current node that is being searched is the end node
-            # add the parents of this node through .parent to a list
-            # reverse said list and return
-            if currentNode.x == endNode.x and currentNode.y == endNode.y:
-                pathToEnd = [currentNode]
+        # add to close set => the nodes that have been searched
+        closedSet.append(currentNode)
 
-                while pathToEnd[len(pathToEnd)-1].parent is not None:
-                    pathToEnd.append(pathToEnd[len(pathToEnd)-1].parent)
+        # if the current node that is being searched is the end node
+        # add the parents of this node through .parent to a list
+        # reverse said list and return
+        if currentNode.x == goalNode.x and currentNode.y == goalNode.y:
+            pathToEnd = [currentNode]
 
-                return pathToEnd[::-1]
+            while pathToEnd[len(pathToEnd) - 1].parent is not None:
+                pathToEnd.append(pathToEnd[len(pathToEnd) - 1].parent)
 
-            # get the all the children of the currentNode (the node that is currently being search)
-            # children are the neighboring nodes of currentNode
-            for child in maze.getChildren(currentNode):
+            return pathToEnd[::-1]
 
-                # node has already been search => skip
-                if child in closedSet:
-                    continue
+        # get the all the children of the currentNode (the node that is currently being search)
+        # children are the neighboring nodes of currentNode
+        for child in maze.getChildren(currentNode):
 
-                # update node distance from start
-                currentScore = currentNode.g + currentNode.getDist(child)
+            # node has already been search => skip
+            if child in closedSet:
+                continue
 
-                isBetter = False
-                if child not in openSet:
-                    # this node hasn't been searched yet, therefore add this node to search set (openSet) and
-                    # calculate values
-                    openSet.append(child)
-                    isBetter = True
+            # update node distance from start
+            currentScore = currentNode.g + currentNode.getDist(child)
 
-                elif currentScore < child.g:
-                    isBetter = True
+            isBetter = False
+            if child not in openSet:
+                # this node hasn't been searched yet, therefore add this node to search set (openSet) and
+                # calculate values
+                openSet.append(child)
+                isBetter = True
 
-                if isBetter:
-                    # set Parent
-                    child.parent = currentNode
+            elif currentScore < child.g:
+                isBetter = True
 
-                    # the distance from start
-                    child.g = currentScore
-                    # the distance from end
-                    child.h = endNode.getDist(child)
-                    # total value of node
-                    child.f = child.g + child.h
+            if isBetter:
+                # set Parent
+                child.parent = currentNode
 
-        return None
+                # the distance from start
+                child.g = currentScore
+                # the distance from end
+                child.h = goalNode.getDist(child)
+                # total value of node
+                child.f = child.g + child.h
+
+    return None
