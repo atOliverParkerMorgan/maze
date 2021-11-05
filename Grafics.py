@@ -40,6 +40,9 @@ class Graphics:
         self.placeStart: bool = False
         self.placeDestination: bool = False
         self.startSolvingAStar: bool = False
+        self.startSolvingDijkstra: bool = False
+        self.startSolvingDepthFirstSearched: bool = False
+
         self.isSolving: bool = False
 
         self.pathFindingAlgorithm = None
@@ -76,9 +79,9 @@ class Graphics:
                     totalDist = self.pathFindingAlgorithm.distFromStartToDestination
                     h, g = max(1, node.h), max(1, node.g)
                     hgMax = max(h, g)
-                    h, g = min(255, int(255/(totalDist/h))), min(255, int(255/(totalDist/g)))
-                    hgMax = min(255, int(255/(totalDist/hgMax)))
-                    COLOR = (hgMax, int(255/h), g)
+                    h, g = min(255, int(255 / (totalDist / h))), min(255, int(255 / (totalDist / g)))
+                    hgMax = min(255, int(255 / (totalDist / hgMax)))
+                    COLOR = (hgMax, int(255 / h), g)
 
                 pygame.draw.rect(self.SCREEN, COLOR, (x, y, self.blockSize, self.blockSize))
 
@@ -109,6 +112,15 @@ class Graphics:
 
             self.pathFindingAlgorithm = PathFindingAlgorithm(maze, self.A_STAR)
             self.startSolvingAStar = False
+            self.isSolving = True
+            maze.deletePath()
+
+        elif self.startSolvingDijkstra and maze.hasStart() and maze.hasDestination():
+            if self.pathFindingAlgorithm is not None:
+                self.pathFindingAlgorithm.hideSearched()
+
+            self.pathFindingAlgorithm = PathFindingAlgorithm(maze, self.DIJKSTRA)
+            self.startSolvingDijkstra = False
             self.isSolving = True
             maze.deletePath()
 
