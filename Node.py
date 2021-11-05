@@ -15,18 +15,20 @@ class Node:
         self.symbol: str = symbol
 
     def setToObstacle(self):
-        self.symbol = "o"
-        return self
+        if not self.isStart() and not self.isDestination():
+            self.symbol = "o"
 
     def setToPath(self):
         if not self.isStart() and not self.isDestination():
             self.symbol = "x"
 
     def setToStart(self):
-        self.symbol = "s"
+        if not self.isObstacle():
+            self.symbol = "s"
 
     def setToDestination(self):
-        self.symbol = "g"
+        if not self.isObstacle():
+            self.symbol = "d"
 
     def setToDefault(self):
         self.symbol = "#"
@@ -48,7 +50,7 @@ class Node:
         return self.symbol == "s"
 
     def isDestination(self):
-        return self.symbol == "g"
+        return self.symbol == "d"
 
     def isSearched(self):
         return self.symbol == "*"

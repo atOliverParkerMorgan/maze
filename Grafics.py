@@ -39,9 +39,11 @@ class Graphics:
         self.placeObstacle: bool = False
         self.placeStart: bool = False
         self.placeDestination: bool = False
+
         self.startSolvingAStar: bool = False
         self.startSolvingDijkstra: bool = False
         self.startSolvingDepthFirstSearched: bool = False
+        self.searchSpeed = 1
 
         self.isSolving: bool = False
 
@@ -106,31 +108,35 @@ class Graphics:
         elif self.mouseIsPressed and self.placeDestination:
             maze.setDestination(mouseX, mouseY)
 
-        elif self.startSolvingAStar and maze.hasStart() and maze.hasDestination():
-            if self.pathFindingAlgorithm is not None:
-                self.pathFindingAlgorithm.hideSearched()
+        elif maze.hasStart() and maze.hasDestination():
+            if self.startSolvingAStar:
+                self.initPathFindingAlgorithm(maze, self.A_STAR)
+                self.startSolvingAStar = False
 
-            self.pathFindingAlgorithm = PathFindingAlgorithm(maze, self.A_STAR)
-            self.startSolvingAStar = False
-            self.isSolving = True
-            maze.deletePath()
+            elif self.startSolvingDijkstra:
+                self.initPathFindingAlgorithm(maze, self.DIJKSTRA)
+                self.startSolvingDijkstra = False
 
-        elif self.startSolvingDijkstra and maze.hasStart() and maze.hasDestination():
-            if self.pathFindingAlgorithm is not None:
-                self.pathFindingAlgorithm.hideSearched()
+            elif self.startSolvingDepthFirstSearched:
+                self.initPathFindingAlgorithm(maze, self.DEPTH_FIRST_SEARCH)
+                self.startSolvingDepthFirstSearched = False
 
-            self.pathFindingAlgorithm = PathFindingAlgorithm(maze, self.DIJKSTRA)
-            self.startSolvingDijkstra = False
-            self.isSolving = True
-            maze.deletePath()
+    def initPathFindingAlgorithm(self, maze: Maze, solutionAlgorithmType: int):
+        if self.pathFindingAlgorithm is not None:
+            self.pathFindingAlgorithm.hideSearched()
+
+        self.pathFindingAlgorithm = PathFindingAlgorithm(maze, solutionAlgorithmType)
+        self.isSolving = True
+        maze.deletePath()
 
     def showSolution(self, maze):
         if self.isSolving:
-            if self.pathFindingAlgorithm.solutionCycle():
-                if self.pathFindingAlgorithm.pathSolution is not None:
-                    maze.createPath(self.pathFindingAlgorithm.pathSolution)
+            for _ in range(self.searchSpeed):
+                if self.pathFindingAlgorithm.solutionCycle():
+                    if self.pathFindingAlgorithm.pathSolution is not None:
+                        maze.createPath(self.pathFindingAlgorithm.pathSolution)
 
-                self.isSolving = False
+                    self.isSolving = False
 
     def evenHandler(self, maze: Maze):
         while True:
@@ -144,7 +150,10 @@ class Graphics:
                     exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        exit()
+                        if maze.HasObstacles > 0:
+                            maze.deleteObstacles()
+                        else:
+                            self.createMenu(False, maze)
                     elif event.key == pygame.K_s:
                         self.resetButtons()
                         self.placeStart = True
@@ -156,17 +165,35 @@ class Graphics:
                     elif event.key == pygame.K_o:
                         self.resetButtons()
                         self.placeObstacle = True
+                        # for optimization
+                        maze.setHasObstacles()
 
-                    elif event.key == pygame.K_a:
+                    elif event.key == pygame.K_1:
                         self.resetButtons()
                         self.startSolvingAStar = True
 
+                    elif event.key == pygame.K_2:
+                        self.resetButtons()
+                        self.startSolvingDijkstra = True
+
+                    elif event.key == pygame.K_3:
+                        self.resetButtons()
+                        self.startSolvingDepthFirstSearched = True
+
                     elif event.unicode == "+":
-                        self.drawSizeObstacle = self.BIG
+
+                        if self.isSolving:
+                            self.searchSpeed += 1
+                            self.searchSpeed = min(5, self.searchSpeed)
+                        else:
+                            self.startSolvingDepthFirstSearched = self.BIG
 
                     elif event.unicode == "-":
-                        self.drawSizeObstacle = self.SMALL
-
+                        if self.isSolving:
+                            self.searchSpeed -= 1
+                            self.searchSpeed = max(1, self.searchSpeed)
+                        else:
+                            self.drawSizeObstacle = self.SMALL
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouseIsPressed = True
 
@@ -191,11 +218,13 @@ class Graphics:
         menu.add.button('QUIT', pygame_menu.events.EXIT)
         menu.add.label('--------------------------------------------------')
         menu.add.label("")
-        menu.add.label("| ------------ CONTROLS ----------- |")
-        menu.add.label('|   S + MOUSE => selects start   |')
-        menu.add.label('|  D + MOUSE => selects finish  |')
-        menu.add.label('| O + MOUSE => adds obstacle |')
-        menu.add.label('|    A => solves maze with A*     |')
+        menu.add.label("|  ------------ CONTROLS ----------- |")
+        menu.add.label('| S + MOUSE => selects start      |')
+        menu.add.label('| D + MOUSE => selects finish    |')
+        menu.add.label('| O + MOUSE => adds obstacle  |')
+        menu.add.label('| 1 => solves maze with A*         |')
+        menu.add.label('| 2 => solves maze with Dijkstra|')
+        menu.add.label('| 3 => solves maze with DFS       |')
         menu.add.label("--------------------------------------------------")
         menu.add.label('|       Author: Oliver Morgan      |')
         menu.add.label("")

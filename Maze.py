@@ -3,10 +3,9 @@ from typing import List
 
 
 class Maze:
-    def __init__(self, width: int, height: int, obstacles=None, startNodePos: tuple = None,
+    def __init__(self, width: int, height: int, startNodePos: tuple = None,
                  goalNodePos: tuple = None, currentPath: List[Node] = None):
-        if obstacles is None:
-            obstacles = []
+
         self.width: int = width
         self.height: int = height
         self.map: List[List[Node]] = []
@@ -19,7 +18,7 @@ class Maze:
         self.currentPath: List[Node] = currentPath
 
         # all obstacle Nodes
-        self.obstacles: List[tuple] = obstacles
+        self.HasObstacles: bool = False
 
     def createMap(self):
         for y in range(self.height):
@@ -27,9 +26,6 @@ class Maze:
             for x in range(self.width):
                 helperList.append(Node(x, y, "#"))
             self.map.append(helperList)
-
-        for x, y in self.obstacles:
-            self.getNode(x, y).setToObstacle()
 
     def createPath(self, path: List[Node]):
         if path is not None:
@@ -42,6 +38,16 @@ class Maze:
             for node in self.currentPath:
                 if node.isPath() and not node.isStart() and not node.isDestination():
                     self.getNode(node.x, node.y).setToDefault()
+
+    def deleteObstacles(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.getNode(x, y).isObstacle():
+                    self.getNode(x, y).setToDefault()
+        self.HasObstacles = False
+
+    def setHasObstacles(self):
+        self.HasObstacles = True
 
     def printMaze(self):
         for y in range(self.height):
@@ -62,18 +68,30 @@ class Maze:
         return children
 
     def setStart(self, x: int, y: int):
+        if self.getNode(x, y).isObstacle():
+            return
+
+        self.getNode(x, y).setToStart()
+
         if self.startNodePos is not None:
-            self.getNode(self.startNodePos[0], self.startNodePos[1]).setToDefault()
+            node = self.getNode(self.startNodePos[0], self.startNodePos[1])
+            if self.startNodePos[0] is not x or self.startNodePos[1] is not y:
+                node.setToDefault()
 
         self.startNodePos = (x, y)
-        self.getNode(self.startNodePos[0], self.startNodePos[1]).setToStart()
 
     def setDestination(self, x: int, y: int):
+        if self.getNode(x, y).isObstacle():
+            return
+
+        self.getNode(x, y).setToDestination()
+
         if self.destinationNodePos is not None:
-            self.getNode(self.destinationNodePos[0], self.destinationNodePos[1]).setToDefault()
+            node = self.getNode(self.destinationNodePos[0], self.destinationNodePos[1])
+            if self.destinationNodePos[0] is not x or self.destinationNodePos[1] is not y:
+                node.setToDefault()
 
         self.destinationNodePos = (x, y)
-        self.getNode(self.destinationNodePos[0], self.destinationNodePos[1]).setToDestination()
 
     def getStart(self):
         if self.startNodePos is None:
