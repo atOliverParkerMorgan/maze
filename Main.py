@@ -1,4 +1,4 @@
-from PathFindingAlgorithms import AStar
+from PathFindingAlgorithm import PathFindingAlgorithm
 from Maze import Maze
 from Grafics import Graphics
 # from Node import Node

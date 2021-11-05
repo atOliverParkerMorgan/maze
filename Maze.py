@@ -3,15 +3,23 @@ from typing import List
 
 
 class Maze:
-    def __init__(self, width: int, height: int, obstacles: List[tuple] = None, startNodePos: tuple = None,
+    def __init__(self, width: int, height: int, obstacles=None, startNodePos: tuple = None,
                  goalNodePos: tuple = None, currentPath: List[Node] = None):
+        if obstacles is None:
+            obstacles = []
         self.width: int = width
         self.height: int = height
         self.map: List[List[Node]] = []
-        self.obstacles: List[tuple] = obstacles
+
+        # starting point and ending point
         self.startNodePos: tuple = goalNodePos
         self.destinationNodePos: tuple = startNodePos
+
+        # current Solution path
         self.currentPath: List[Node] = currentPath
+
+        # all obstacle Nodes
+        self.obstacles: List[tuple] = obstacles
 
     def createMap(self):
         for y in range(self.height):
@@ -20,9 +28,8 @@ class Maze:
                 helperList.append(Node(x, y, "#"))
             self.map.append(helperList)
 
-        if self.obstacles is not None:
-            for ob in self.obstacles:
-                self.getNode(ob[0], ob[1]).setToObstacle()
+        for x, y in self.obstacles:
+            self.getNode(x, y).setToObstacle()
 
     def createPath(self, path: List[Node]):
         if path is not None:
@@ -33,7 +40,7 @@ class Maze:
     def deletePath(self):
         if self.currentPath is not None:
             for node in self.currentPath:
-                if self.getNode(node.x, node.y).isPath():
+                if node.isPath() and not node.isStart() and not node.isDestination():
                     self.getNode(node.x, node.y).setToDefault()
 
     def printMaze(self):

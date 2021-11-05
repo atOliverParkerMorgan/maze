@@ -3,15 +3,26 @@ from Node import Node
 from typing import List
 
 
-class AStar:
+class PathFindingAlgorithm:
 
-    def __init__(self, maze: Maze):
+    def __init__(self, maze: Maze, mode: int):
+
+        # modes
+        self.A_STAR = 0
+        self.DIJKSTRA = 1
+        self.DEPTH_FIRST_SEARCH = 2
+
+        self.mode = mode
+
         self.destinationNode: Node = maze.getDestination()
         self.startNode: Node = maze.getStart()
 
+        # total dist from start to destination for graphics
         self.distFromStartToDestination: int = self.startNode.getDist(self.destinationNode)
 
+        # to save nodes that have already been searched
         self.closedSet = []
+        # to save nodes that haven't been searched yet
         self.openSet = [self.startNode]
 
         self.maze: Maze = maze
@@ -27,7 +38,18 @@ class AStar:
         currentIndex = 0
 
         for index, item in enumerate(self.openSet):
-            if item.f < currentNode.f:
+
+            # A_STAR algorithm uses f value (f=g+h)
+            if item.f < currentNode.f and self.mode == self.A_STAR:
+                currentNode = item
+                currentIndex = index
+
+            # DIJKSTRA algorithm uses g value (distance from start)
+            elif item.g < currentNode.g and self.mode == self.DIJKSTRA:
+                currentNode = item
+                currentIndex = index
+            # DEPTH_FIRST_SEARCH algorithm uses h value (distance to finish)
+            elif item.h < currentNode.h and self.mode == self.DEPTH_FIRST_SEARCH:
                 currentNode = item
                 currentIndex = index
 

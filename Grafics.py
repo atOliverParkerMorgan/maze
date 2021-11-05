@@ -1,6 +1,6 @@
 import pygame
 import pygame_menu
-from PathFindingAlgorithms import AStar
+from PathFindingAlgorithm import PathFindingAlgorithm
 from Maze import Maze
 from pygame_menu.examples import create_example_window
 
@@ -11,6 +11,10 @@ class Graphics:
 
         self.SMALL: int = 0
         self.BIG: int = 1
+
+        self.A_STAR = 0
+        self.DIJKSTRA = 1
+        self.DEPTH_FIRST_SEARCH = 2
 
         self.BLACK: tuple = (0, 0, 0)
         self.WHITE: tuple = (200, 200, 200)
@@ -35,7 +39,7 @@ class Graphics:
         self.placeObstacle: bool = False
         self.placeStart: bool = False
         self.placeDestination: bool = False
-        self.starSolvingAStar: bool = False
+        self.startSolvingAStar: bool = False
         self.isSolving: bool = False
 
         self.pathFindingAlgorithm = None
@@ -45,7 +49,7 @@ class Graphics:
         self.placeObstacle = False
         self.placeStart = False
         self.placeDestination = False
-        self.starSolvingAStar = False
+        self.startSolvingAStar = False
 
     def drawGrid(self):
         for x in range(0, self.WINDOW_WIDTH, self.blockSize):
@@ -88,7 +92,9 @@ class Graphics:
             maze.getNode(mouseX, mouseY).setToObstacle()
 
         elif self.mouseIsPressed and self.placeObstacle and self.drawSizeObstacle == self.BIG:
-            for node in maze.getChildren(maze.getNode(mouseX, mouseY)):
+            originNode = maze.getNode(mouseX, mouseY)
+            originNode.setToObstacle()
+            for node in maze.getChildren(originNode):
                 node.setToObstacle()
 
         elif self.mouseIsPressed and self.placeStart:
@@ -97,12 +103,12 @@ class Graphics:
         elif self.mouseIsPressed and self.placeDestination:
             maze.setDestination(mouseX, mouseY)
 
-        elif self.starSolvingAStar and maze.hasStart() and maze.hasDestination():
+        elif self.startSolvingAStar and maze.hasStart() and maze.hasDestination():
             if self.pathFindingAlgorithm is not None:
                 self.pathFindingAlgorithm.hideSearched()
 
-            self.pathFindingAlgorithm = AStar(maze)
-            self.starSolvingAStar = False
+            self.pathFindingAlgorithm = PathFindingAlgorithm(maze, self.A_STAR)
+            self.startSolvingAStar = False
             self.isSolving = True
             maze.deletePath()
 
@@ -141,13 +147,13 @@ class Graphics:
 
                     elif event.key == pygame.K_a:
                         self.resetButtons()
-                        self.starSolvingAStar = True
+                        self.startSolvingAStar = True
 
-                    if event.key == pygame.K_i:
-                        if self.drawSizeObstacle == self.BIG:
-                            self.drawSizeObstacle = self.SMALL
-                        if self.drawSizeObstacle == self.SMALL:
-                            self.drawSizeObstacle = self.BIG
+                    elif event.unicode == "+":
+                        self.drawSizeObstacle = self.BIG
+
+                    elif event.unicode == "-":
+                        self.drawSizeObstacle = self.SMALL
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouseIsPressed = True
@@ -168,19 +174,18 @@ class Graphics:
 
         menu = pygame_menu.Menu('Maze Solver', self.WINDOW_WIDTH, self.WINDOW_HEIGHT,
                                 theme=pygame_menu.themes.THEME_BLUE)
-
-        menu.add.label('----------------------------------')
+        menu.add.label('--------------------------------------------------')
         menu.add.button(playString, resumeGame)
         menu.add.button('QUIT', pygame_menu.events.EXIT)
-        menu.add.label('----------------------------------')
+        menu.add.label('--------------------------------------------------')
         menu.add.label("")
-        menu.add.label("CONTROLS")
-        menu.add.label('S + MOUSE => selects start')
-        menu.add.label('D + MOUSE => selects finish')
-        menu.add.label('O + MOUSE => adds obstacle')
-        menu.add.label('A => solves maze with A*')
-        menu.add.label("")
-        menu.add.label('Author: Oliver Morgan')
+        menu.add.label("| ------------ CONTROLS ----------- |")
+        menu.add.label('|   S + MOUSE => selects start   |')
+        menu.add.label('|  D + MOUSE => selects finish  |')
+        menu.add.label('| O + MOUSE => adds obstacle |')
+        menu.add.label('|    A => solves maze with A*     |')
+        menu.add.label("--------------------------------------------------")
+        menu.add.label('|       Author: Oliver Morgan      |')
         menu.add.label("")
 
         menu.mainloop(surface)
