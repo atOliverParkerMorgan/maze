@@ -3,19 +3,20 @@ import pygame_menu
 from PathFindingAlgorithms import AStar
 from Maze import Maze
 from pygame_menu.examples import create_example_window
-from typing import List
-from Node import Node
 
 
 class Graphics:
 
     def __init__(self, width: int, height: int, blockSize: int = 20):
 
+        self.SMALL: int = 0
+        self.BIG: int = 1
+
         self.BLACK: tuple = (0, 0, 0)
         self.WHITE: tuple = (200, 200, 200)
         self.RED: tuple = (255, 87, 51)
         self.ORANGE: tuple = (200, 162, 34)
-        self.GREEN: tuple = (50,205,50)
+        self.GREEN: tuple = (50, 205, 50)
         self.PURPLE: tuple = (100, 34, 162)
         self.YELLOW: tuple = (255, 255, 0)
         self.LIGHT_BLUE: tuple = (102, 167, 197)
@@ -38,6 +39,7 @@ class Graphics:
         self.isSolving: bool = False
 
         self.pathFindingAlgorithm = None
+        self.drawSizeObstacle: int = self.BIG
 
     def resetButtons(self):
         self.placeObstacle = False
@@ -58,14 +60,14 @@ class Graphics:
                 COLOR = self.LIGHT_BLUE
                 node = maze.map[int(y / self.blockSize)][int(x / self.blockSize)]
 
-                if node.isObstacle():
-                    COLOR = self.BLACK
-                elif node.isPath():
-                    COLOR = self.GREEN
-                elif node.isStar():
+                if node.isStart():
                     COLOR = self.ORANGE
                 elif node.isDestination():
                     COLOR = self.YELLOW
+                elif node.isObstacle():
+                    COLOR = self.BLACK
+                elif node.isPath():
+                    COLOR = self.GREEN
                 elif node.isSearched():
                     totalDist = self.pathFindingAlgorithm.distFromStartToDestination
                     h, g = max(1, node.h), max(1, node.g)
@@ -82,16 +84,20 @@ class Graphics:
         mouseX: int = int(pos[0] / self.blockSize)
         mouseY: int = int(pos[1] / self.blockSize)
 
-        if self.mouseIsPressed and self.placeObstacle:
-            maze.map[mouseY][mouseX].setToObstacle()
+        if self.mouseIsPressed and self.placeObstacle and self.drawSizeObstacle == self.SMALL:
+            maze.getNode(mouseX, mouseY).setToObstacle()
 
-        if self.mouseIsPressed and self.placeStart:
+        elif self.mouseIsPressed and self.placeObstacle and self.drawSizeObstacle == self.BIG:
+            for node in maze.getChildren(maze.getNode(mouseX, mouseY)):
+                node.setToObstacle()
+
+        elif self.mouseIsPressed and self.placeStart:
             maze.setStart(mouseX, mouseY)
 
-        if self.mouseIsPressed and self.placeDestination:
+        elif self.mouseIsPressed and self.placeDestination:
             maze.setDestination(mouseX, mouseY)
 
-        if self.starSolvingAStar and maze.hasStart() and maze.hasDestination():
+        elif self.starSolvingAStar and maze.hasStart() and maze.hasDestination():
             if self.pathFindingAlgorithm is not None:
                 self.pathFindingAlgorithm.hideSearched()
 
@@ -136,6 +142,12 @@ class Graphics:
                     elif event.key == pygame.K_a:
                         self.resetButtons()
                         self.starSolvingAStar = True
+
+                    if event.key == pygame.K_i:
+                        if self.drawSizeObstacle == self.BIG:
+                            self.drawSizeObstacle = self.SMALL
+                        if self.drawSizeObstacle == self.SMALL:
+                            self.drawSizeObstacle = self.BIG
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouseIsPressed = True
