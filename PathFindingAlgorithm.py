@@ -63,6 +63,9 @@ class PathFindingAlgorithm:
         # add to close set => the nodes that have been searched
         self.closedSet.append(currentNode)
 
+        # change the visual representation of node
+        currentNode.setToSearched()
+
         # if the current node that is being searched is the end node
         # add the parents of this node through .parent to a list
         # reverse said list and return
@@ -108,11 +111,12 @@ class PathFindingAlgorithm:
                 # total value of node
                 child.f = child.g + child.h
 
-                # change the visual representation of node
-                currentNode.setToSearched()
-
         # return True if no valid path
-        return len(self.openSet) <= 0
+        # return len(self.openSet) == 0 doesn't work here
+        for _ in self.openSet:
+            return False
+
+        return True
 
     def solve(self):
         # solve completely

@@ -1,3 +1,4 @@
+import random
 import pygame
 import pygame_menu
 from PathFindingAlgorithm import PathFindingAlgorithm
@@ -16,6 +17,9 @@ class Graphics:
         self.A_STAR = 0
         self.DIJKSTRA = 1
         self.DEPTH_FIRST_SEARCH = 2
+
+        # the number of main loop cycles the solution show in random mode
+        self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE = 50
 
         # color constants
         self.BLACK: tuple = (0, 0, 0)
@@ -44,6 +48,10 @@ class Graphics:
         self.placeObstacle: bool = False
         self.placeStart: bool = False
         self.placeDestination: bool = False
+        self.placeRandom: bool = False
+
+        # the number of main loop cycles the solution is currently show in random mode
+        self.showSolutionLengthInRandomModeCurrent = 0
 
         self.startSolvingAStar: bool = False
         self.startSolvingDijkstra: bool = False
@@ -63,7 +71,6 @@ class Graphics:
         self.placeObstacle = False
         self.placeStart = False
         self.placeDestination = False
-        self.startSolvingAStar = False
 
     def drawGrid(self):
         for x in range(0, self.WINDOW_WIDTH, self.blockSize):
@@ -137,7 +144,7 @@ class Graphics:
         elif self.mouseIsPressed and self.placeDestination:
             maze.setDestination(mouseX, mouseY)
 
-        elif maze.hasStart() and maze.hasDestination():
+        if maze.hasStart() and maze.hasDestination():
             # init path finding algorithm
 
             if self.startSolvingAStar:
@@ -151,6 +158,46 @@ class Graphics:
             elif self.startSolvingDepthFirstSearched:
                 self.initPathFindingAlgorithm(maze, self.DEPTH_FIRST_SEARCH)
                 self.startSolvingDepthFirstSearched = False
+
+        if self.placeRandom:
+            if not self.isSolving:
+                if maze.currentPath is not None and self.showSolutionLengthInRandomModeCurrent < self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE:
+                    self.showSolutionLengthInRandomModeCurrent += 1
+
+                else:
+                    # reset time
+                    self.showSolutionLengthInRandomModeCurrent = 0
+
+                    if maze.getStart() is None:
+                        # set random start if no start has been selected yet
+                        while maze.getStart() is None:
+                            maze.setStart(random.randint(0, maze.width - 1), random.randint(0, maze.height - 1))
+                    else:
+                        # set random start if start has been selected
+                        x, y = maze.getStart().x, maze.getStart().y
+                        while maze.getStart().x is x or maze.getStart().y is y:
+                            maze.setStart(random.randint(0, maze.width - 1), random.randint(0, maze.height - 1))
+
+                    if maze.getDestination() is None:
+                        # set random destination if no start has been selected yet
+                        while maze.getDestination() is None:
+                            maze.setDestination(random.randint(0, maze.width - 1), random.randint(0, maze.height - 1))
+                    else:
+                        # set random destination if start has been selected
+                        x, y = maze.getDestination().x, maze.getDestination().y
+                        while maze.getDestination().x is x or maze.getDestination().y is y:
+                            maze.setDestination(random.randint(0, maze.width - 1), random.randint(0, maze.height - 1))
+
+                    # set random solution algorithm
+                    r = random.randint(0, 2)
+                    if r == 0:
+                        self.startSolvingAStar = True
+
+                    elif r == 1:
+                        self.startSolvingDijkstra = True
+
+                    elif r == 2:
+                        self.startSolvingDepthFirstSearched = True
 
     def initPathFindingAlgorithm(self, maze: Maze, solutionAlgorithmType: int):
         # if there was a search before => hide
@@ -212,6 +259,10 @@ class Graphics:
                         # for optimization
                         maze.setHasObstacles()
 
+                    elif event.key == pygame.K_r:
+                        self.resetButtons()
+                        self.placeRandom = not self.placeRandom
+
                     elif event.key == pygame.K_1:
                         self.resetButtons()
                         self.startSolvingAStar = True
@@ -226,25 +277,23 @@ class Graphics:
 
                     elif event.unicode == "+":
 
+                        if self.placeObstacle:
+                            self.drawSizeObstacle = self.BIG
+
                         if self.isSolving:
                             self.searchSpeed += 1
                             # search speed can only range from 1-5
                             self.searchSpeed = min(5, self.searchSpeed)
-                        else:
-                            self.startSolvingDepthFirstSearched = self.BIG
 
                     elif event.unicode == "-":
+
+                        if self.placeObstacle:
+                            self.drawSizeObstacle = self.SMALL
 
                         if self.isSolving:
                             self.searchSpeed -= 1
                             # search speed can only range from 1-5
                             self.searchSpeed = max(1, self.searchSpeed)
-                        else:
-                            self.drawSizeObstacle = self.SMALL
-
-                elif event.type == pygame.KEYUP:
-                    # reset all
-                    self.resetButtons()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.mouseIsPressed = True
@@ -272,15 +321,17 @@ class Graphics:
         menu.add.button('QUIT', pygame_menu.events.EXIT)
         menu.add.label('--------------------------------------------------')
         menu.add.label("")
-        menu.add.label("|  ------------ CONTROLS ----------- |")
-        menu.add.label('| S + MOUSE => selects start      |')
-        menu.add.label('| D + MOUSE => selects finish    |')
-        menu.add.label('| O + MOUSE => adds obstacle  |')
-        menu.add.label('| 1 => solves maze with A*         |')
-        menu.add.label('| 2 => solves maze with Dijkstra|')
-        menu.add.label('| 3 => solves maze with DFS       |')
+        menu.add.label("|   ------------- CONTROLS ------------   |")
+        menu.add.label('| S + MOUSE => selects start           |')
+        menu.add.label('| D + MOUSE => selects finish         |')
+        menu.add.label('| O + MOUSE => adds obstacle       |')
+        menu.add.label('| R => random searches                   |')
+        menu.add.label('| ESC => remove obstacles / menu |')
+        menu.add.label('| 1 => solves maze with A*              |')
+        menu.add.label('| 2 => solves maze with Dijkstra     |')
+        menu.add.label('| 3 => solves maze with DFS            |')
         menu.add.label("--------------------------------------------------")
-        menu.add.label('|       Author: Oliver Morgan      |')
+        menu.add.label('|          Author: Oliver Morgan          |')
         menu.add.label("")
 
         menu.mainloop(surface)
