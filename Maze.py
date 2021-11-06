@@ -36,7 +36,7 @@ class Maze:
     def deletePath(self):
         if self.currentPath is not None:
             for node in self.currentPath:
-                if node.isPath() and not node.isStart() and not node.isDestination():
+                if node.isPath():
                     self.getNode(node.x, node.y).setToDefault()
 
     def deleteObstacles(self):
@@ -68,29 +68,36 @@ class Maze:
         return children
 
     def setStart(self, x: int, y: int):
+        # if node is obstacle => skip; start cannot be placed on obstacle
         if self.getNode(x, y).isObstacle():
             return
 
         self.getNode(x, y).setToStart()
 
+        # set previous position of start to default if the new position is different than the last and is not None
         if self.startNodePos is not None:
             node = self.getNode(self.startNodePos[0], self.startNodePos[1])
             if self.startNodePos[0] is not x or self.startNodePos[1] is not y:
                 node.setToDefault()
 
+        # update position
         self.startNodePos = (x, y)
 
     def setDestination(self, x: int, y: int):
+        # if node is obstacle => skip; destination cannot be placed on obstacle
         if self.getNode(x, y).isObstacle():
             return
 
         self.getNode(x, y).setToDestination()
 
+        # set previous position of start to default if the new position is different than the last and is not None
         if self.destinationNodePos is not None:
+
             node = self.getNode(self.destinationNodePos[0], self.destinationNodePos[1])
             if self.destinationNodePos[0] is not x or self.destinationNodePos[1] is not y:
                 node.setToDefault()
 
+        # update position
         self.destinationNodePos = (x, y)
 
     def getStart(self):

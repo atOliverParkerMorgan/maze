@@ -29,8 +29,12 @@ class PathFindingAlgorithm:
         self.pathSolution: List[Node] = []
 
     def hideSearched(self):
+        # used to restart graphics output
         for node in self.closedSet:
-            node.setToDefault()
+            # reset all nodes that are not a obstacle or start or destination
+            if not node.isStart() and not node.isDestination() and not node.isObstacle():
+                node.setToDefault()
+                node.f = node.h = node.g = 0
 
     def solutionCycle(self):
         # find the node with the best score f (the node that is closet to start and end)
@@ -45,11 +49,11 @@ class PathFindingAlgorithm:
                 currentIndex = index
 
             # DIJKSTRA algorithm uses g value (distance from start)
-            elif item.g < currentNode.g and self.mode == self.DIJKSTRA:
+            if item.g < currentNode.g and self.mode == self.DIJKSTRA:
                 currentNode = item
                 currentIndex = index
             # DEPTH_FIRST_SEARCH algorithm uses h value (distance to finish)
-            elif item.h < currentNode.h and self.mode == self.DEPTH_FIRST_SEARCH:
+            if item.h < currentNode.h and self.mode == self.DEPTH_FIRST_SEARCH:
                 currentNode = item
                 currentIndex = index
 
@@ -111,6 +115,7 @@ class PathFindingAlgorithm:
         return len(self.openSet) <= 0
 
     def solve(self):
+        # solve completely
         while self.solutionCycle():
             pass
         return self.pathSolution

@@ -8,10 +8,17 @@ class Node:
         self.x: int = x
         self.y: int = y
 
+        # values for pathFindingAlgorithm
+        # g+h
         self.f: int = 0
+
+        # distance from destination
         self.h: int = 0
+
+        # distance from start
         self.g: int = 0
 
+        # type of node => (START, DESTINATION, OBSTACLE, PATH, SEARCH, DEFAULT)
         self.symbol: str = symbol
 
     def setToObstacle(self):
