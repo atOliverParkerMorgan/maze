@@ -72,7 +72,7 @@ class PathFindingAlgorithm:
         if currentNode.x == self.destinationNode.x and currentNode.y == self.destinationNode.y:
             pathToEnd = [currentNode]
 
-            while pathToEnd[len(pathToEnd) - 1].parent is not None:
+            while pathToEnd[len(pathToEnd) - 1].parent is not self.startNode:
                 pathToEnd.append(pathToEnd[len(pathToEnd) - 1].parent)
 
             # path found => save path and return to True to signal success

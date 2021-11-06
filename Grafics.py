@@ -19,7 +19,7 @@ class Graphics:
         self.DEPTH_FIRST_SEARCH = 2
 
         # the number of main loop cycles the solution show in random mode
-        self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE = 50
+        self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE = 5
 
         # color constants
         self.BLACK: tuple = (0, 0, 0)
