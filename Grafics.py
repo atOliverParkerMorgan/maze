@@ -9,6 +9,9 @@ from pygame_menu.examples import create_example_window
 class Graphics:
 
     def __init__(self, width: int, height: int, blockSize: int = 20):
+
+        self.menu = None
+
         # obstacle draw size constants
         self.SMALL: int = 0
         self.BIG: int = 1
@@ -19,7 +22,7 @@ class Graphics:
         self.DEPTH_FIRST_SEARCH = 2
 
         # the number of main loop cycles the solution show in random mode
-        self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE = 5
+        self.SHOW_SOLUTION_LENGTH_IN_RANDOM_MODE = 20
 
         # color constants
         self.BLACK: tuple = (0, 0, 0)
@@ -314,24 +317,24 @@ class Graphics:
         # create menu
         surface = create_example_window('Maze Solver', (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
 
-        menu = pygame_menu.Menu('Maze Solver', self.WINDOW_WIDTH, self.WINDOW_HEIGHT,
-                                theme=pygame_menu.themes.THEME_BLUE)
-        menu.add.label('--------------------------------------------------')
-        menu.add.button(playString, resumeGame)
-        menu.add.button('QUIT', pygame_menu.events.EXIT)
-        menu.add.label('--------------------------------------------------')
-        menu.add.label("")
-        menu.add.label("|   ------------- CONTROLS ------------   |")
-        menu.add.label('| S + MOUSE => selects start           |')
-        menu.add.label('| D + MOUSE => selects finish         |')
-        menu.add.label('| O + MOUSE => adds obstacle       |')
-        menu.add.label('| R => random searches                   |')
-        menu.add.label('| ESC => remove obstacles / menu |')
-        menu.add.label('| 1 => solves maze with A*              |')
-        menu.add.label('| 2 => solves maze with Dijkstra     |')
-        menu.add.label('| 3 => solves maze with DFS            |')
-        menu.add.label("--------------------------------------------------")
-        menu.add.label('|          Author: Oliver Morgan          |')
-        menu.add.label("")
+        self.menu = pygame_menu.Menu('Maze Solver', self.WINDOW_WIDTH, self.WINDOW_HEIGHT,
+                                     theme=pygame_menu.themes.THEME_BLUE)
+        self.menu.add.label('--------------------------------------------------')
+        self.menu.add.button(playString, resumeGame)
+        self.menu.add.button('QUIT', pygame_menu.events.EXIT)
+        self.menu.add.label('--------------------------------------------------')
+        self.menu.add.label("")
+        self.menu.add.label("|   ------------- CONTROLS ------------   |")
+        self.menu.add.label('| S + MOUSE => selects start           |')
+        self.menu.add.label('| D + MOUSE => selects finish         |')
+        self.menu.add.label('| O + MOUSE => adds obstacle       |')
+        self.menu.add.label('| R => random searches                   |')
+        self.menu.add.label('| ESC => remove obstacles / menu |')
+        self.menu.add.label('| 1 => solves maze with A*              |')
+        self.menu.add.label('| 2 => solves maze with Dijkstra     |')
+        self.menu.add.label('| 3 => solves maze with DFS            |')
+        self.menu.add.label("--------------------------------------------------")
+        self.menu.add.label('|          Author: Oliver Morgan          |')
+        self.menu.add.label("")
 
-        menu.mainloop(surface)
+        self.menu.mainloop(surface)
