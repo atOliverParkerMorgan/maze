@@ -125,6 +125,6 @@ class PathFindingAlgorithm:
 
     def solve(self):
         # solve completely
-        while self.solutionCycle():
+        while not self.solutionCycle():
             pass
         return self.pathSolution
