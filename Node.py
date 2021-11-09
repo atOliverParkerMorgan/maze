@@ -64,3 +64,15 @@ class Node:
 
     def getDist(self, node):
         return math.sqrt((node.x - self.x) ** 2 + (node.y - self.y) ** 2)
+
+    def getBetterHeuristics(self, start, destination):
+        # dist from destination
+        dx1 = self.x - destination.x
+        dy1 = self.y - destination.y
+
+        # total dist
+        dx2 = start.x - destination.x
+        dy2 = start.y - destination.y
+
+        cross = abs(dx1 * dy2 - dx2 * dy1)
+        return cross * 000.1

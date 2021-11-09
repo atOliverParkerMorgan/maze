@@ -37,7 +37,12 @@ class PathFindingAlgorithm:
                 node.f = node.h = node.g = 0
 
     def solutionCycle(self):
+        # prevents opentSet out of range
+        if len(self.openSet) == 0:
+            return True
+
         # find the node with the best score f (the node that is closet to start and end)
+
         currentNode = self.openSet[0]
         currentIndex = 0
 
@@ -109,7 +114,7 @@ class PathFindingAlgorithm:
                 # the distance from end
                 child.h = self.destinationNode.getDist(child)
                 # total value of node
-                child.f = child.g + child.h
+                child.f = child.g + child.h + child.getBetterHeuristics(self.startNode, self.destinationNode)
 
         # return True if no valid path
         # return len(self.openSet) == 0 doesn't work here
