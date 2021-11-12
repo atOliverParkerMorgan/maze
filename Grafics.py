@@ -239,7 +239,7 @@ class Graphics:
             # pygame events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    exit()
+                    pygame_menu.events.EXIT()
                 if event.type == pygame.KEYDOWN:
                     # key is pressed
                     if event.key == pygame.K_ESCAPE:
