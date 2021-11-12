@@ -114,7 +114,7 @@ class PathFindingAlgorithm:
                 # the distance from end
                 child.h = self.destinationNode.getDist(child)
                 # total value of node
-                child.f = child.g + child.h + child.getBetterHeuristics(self.startNode, self.destinationNode)
+                child.f = child.g + child.h  # + child.getBetterHeuristics(self.startNode, self.destinationNode)
 
         # return True if no valid path
         # return len(self.openSet) == 0 doesn't work here
