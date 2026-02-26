@@ -102,4 +102,3 @@ Suggested manual checks:
 ## Project Context
 
 This is an educational visualization project focused on algorithm behavior rather than production-grade pathfinding APIs. The code is organized for readability and interactive experimentation, making it useful for learning, demos, and iterative algorithm tuning.
-
